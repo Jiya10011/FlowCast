@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowCast — Bengaluru Event Traffic Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080C14;
+      --surface:   #0D1220;
+      --glass:     rgba(255,255,255,0.04);
+      --border:    rgba(255,255,255,0.08);
+      --accent:    #3B82F6;
+      --accent2:   #06B6D4;
+      --amber:     #F59E0B;
+      --red:       #EF4444;
+      --green:     #10B981;
+      --text:      #F1F5F9;
+      --muted:     #64748B;
+      --subtle:    #1E293B;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(8,12,20,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent2);
+      margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(44px, 7vw, 84px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      max-width: 900px;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    .hero-title .grad {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 24px;
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .hero-actions {
+      margin-top: 40px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 0 0 0 rgba(59,130,246,0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(59,130,246,0.35);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 15px;
+      text-decoration: none;
+      transition: all 0.2s;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.07);
+      transform: translateY(-2px);
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      margin-top: 72px;
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      animation: fadeUp 0.7s 0.4s ease both;
+      max-width: 700px;
+      width: 100%;
+    }
+
+    .stat {
+      flex: 1;
+      padding: 24px 32px;
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .stat-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-val .accent { color: var(--accent); }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── SCROLL INDICATOR ── */
+    .scroll-hint {
+      margin-top: 56px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      animation: fadeUp 0.7s 0.5s ease both;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollDown 1.5s ease infinite;
+    }
+
+    /* ── SECTION ── */
+    section {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 96px 24px;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent2);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      max-width: 560px;
+    }
+
+    /* ── FEATURE CARDS ── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 48px;
+    }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(59,130,246,0.4), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      border-color: rgba(59,130,246,0.25);
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* ── HOW IT WORKS ── */
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0;
+      margin-top: 56px;
+      position: relative;
+    }
+
+    .flow::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), var(--accent), var(--border), transparent);
+    }
+
+    .flow-step {
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .flow-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent);
+      position: relative;
+      z-index: 1;
+    }
+
+    .flow-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    .flow-desc { font-size: 13px; color: var(--muted); }
+
+    /* ── TECH PILLS ── */
+    .tech-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 48px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .pill:hover { border-color: var(--accent); color: var(--text); }
+    .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(6,182,212,0.05));
+      border: 1px solid rgba(59,130,246,0.15);
+      border-radius: 24px;
+      padding: 72px 48px;
+      text-align: center;
+      margin: 0 24px 96px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    .cta-section p { color: var(--muted); margin-bottom: 36px; font-size: 16px; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer p { font-size: 13px; color: var(--muted); }
+    .footer-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--subtle);
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes scrollDown {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      51% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .stats-row { flex-direction: column; }
+      .flow::before { display: none; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+      .cta-section { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Flow<span>Cast</span></div>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#tech">Technology</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <a href="dashboard.html" class="nav-cta">Open Dashboard →</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">Flipkart Gridlock 2.0 · Flipkart Gridlock 2.0 · Round 2</div>
+
+    <h1 class="hero-title">
+      Predict Traffic Before<br /><span class="grad">Events Happen</span>
+    </h1>
+
+    <p class="hero-sub">
+      AI-powered congestion forecasting for Bengaluru. Input any planned event — FlowCast predicts zone-level traffic impact and recommends optimal manpower and diversion routes.
+    </p>
+
+    <div class="hero-actions">
+      <a href="dashboard.html" class="btn-primary">
+        <span>→</span> Launch Prototype
+      </a>
+      <a href="#how" class="btn-ghost">
+        See how it works
+      </a>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-val"><span class="accent">90.97</span></div>
+        <div class="stat-label">Round 1 Score</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">LightGBM</div>
+        <div class="stat-label">Core Model</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val"><span class="accent">5+</span></div>
+        <div class="stat-label">Event Types</div>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <span>scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="features" class="reveal">
+    <div class="section-label">// capabilities</div>
+    <h2 class="section-title">Everything needed to manage event-driven traffic</h2>
+    <div class="features">
+      <div class="card">
+        <div class="card-icon">📍</div>
+        <div class="card-title">Zone-Level Prediction</div>
+        <div class="card-desc">Predict congestion intensity per zone across Bengaluru using event metadata, historical data, and proximity to intersections.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">👮</div>
+        <div class="card-title">Manpower Allocation</div>
+        <div class="card-desc">Smart recommendations for how many officers to deploy and where, based on predicted traffic load and event scale.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🗺️</div>
+        <div class="card-title">Diversion Planning</div>
+        <div class="card-desc">Suggests alternate routes and barricading points before congestion occurs, giving authorities time to act.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Real-Time Input</div>
+        <div class="card-desc">Enter event details and get instant predictions. Adjust parameters live and watch impact scores update in milliseconds.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Impact Visualization</div>
+        <div class="card-desc">Color-coded zone maps and severity charts make complex traffic data instantly readable for decision-makers.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">ML-Powered Core</div>
+        <div class="card-desc">LightGBM model trained on Bengaluru traffic patterns, event calendars, and historical congestion datasets from HackerEarth.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="reveal">
+    <div class="section-label">// process</div>
+    <h2 class="section-title">From event input to action plan in seconds</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">01</div>
+        <div class="flow-title">Enter Event</div>
+        <div class="flow-desc">Type, location, date, time, and expected crowd size</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">02</div>
+        <div class="flow-title">Model Inference</div>
+        <div class="flow-desc">LightGBM calculates zone-level impact scores</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">03</div>
+        <div class="flow-title">Risk Assessment</div>
+        <div class="flow-desc">Zones ranked Low → Medium → Critical</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">04</div>
+        <div class="flow-title">Action Plan</div>
+        <div class="flow-desc">Manpower count, barricades, and diversion routes generated</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section id="tech" class="reveal">
+    <div class="section-label">// tech stack</div>
+    <h2 class="section-title">Built on proven tools, deployed on edge</h2>
+    <div class="tech-row">
+      <div class="pill"><span class="pill-dot"></span>Python 3.11</div>
+      <div class="pill"><span class="pill-dot"></span>LightGBM</div>
+      <div class="pill"><span class="pill-dot"></span>Pandas</div>
+      <div class="pill"><span class="pill-dot"></span>Scikit-learn</div>
+      <div class="pill"><span class="pill-dot"></span>Vercel Serverless</div>
+      <div class="pill"><span class="pill-dot"></span>Vanilla JS</div>
+      <div class="pill"><span class="pill-dot"></span>Chart.js</div>
+      <div class="pill"><span class="pill-dot"></span>Folium Maps</div>
+      <div class="pill"><span class="pill-dot"></span>HackerEarth Dataset</div>
+      <div class="pill"><span class="pill-dot"></span>Vercel Edge Functions</div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section reveal">
+    <h2>Ready to see the prototype?</h2>
+    <p>Interact with the live prediction engine — enter any Bengaluru event and get instant traffic intelligence.</p>
+    <a href="dashboard.html" class="btn-primary" style="font-size:16px; padding:16px 36px;">
+      Open Dashboard →
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>FlowCast · Team Signal · Submitted by Jiya Jain</p>
+    <div class="footer-badge">Flipkart Gridlock 2.0 · Round 2</div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

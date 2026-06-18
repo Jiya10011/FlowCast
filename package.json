@@ -1,0 +1,16 @@
+{
+  "name": "flowcast-gridlock",
+  "version": "1.0.0",
+  "description": "Bengaluru Event-Driven Traffic Intelligence — Flipkart Gridlock 2.0",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "build": "echo 'Static site, no build needed'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["traffic", "bengaluru", "LightGBM", "hackathon"],
+  "author": "Team FlowCast",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
+}
